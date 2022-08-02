@@ -20,7 +20,7 @@ class EventEmbedding(nn.Module):
         """
         super().__init__()
         # self.type = TypeEmbedding(type_size=type_size, embed_size=embed_size)
-        self.type = nn.Embedding(type_size+1, embed_size)
+        self.type = nn.Embedding(type_size + 1, embed_size)
         self.position = PositionalEmbedding(d_model=embed_size)
         self.dropout = nn.Dropout(p=dropout)
         self.embed_size = embed_size

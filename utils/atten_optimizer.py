@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 class NoamOpt:
     "Optim wrapper that implements rate."
 
@@ -17,7 +19,7 @@ class NoamOpt:
         self._step += 1
         rate = self.rate()
         for p in self.optimizer.param_groups:
-            p['lr'] = rate
+            p["lr"] = rate
         self._rate = rate
         self.optimizer.step()
 
@@ -25,15 +27,20 @@ class NoamOpt:
         "Implement `lrate` above"
         if step is None:
             step = self._step
-        return self.initial_lr + self.factor * \
-               (self.model_size ** (-0.5) *
-                min(step ** (-0.5), step * self.warmup ** (-1.5)))
+        return self.initial_lr + self.factor * (
+            self.model_size ** (-0.5)
+            * min(step ** (-0.5), step * self.warmup ** (-1.5))
+        )
 
 
-if __name__ == '__main__':
-    opts = [NoamOpt(512, 1, 4000, 0.01, None),
-            NoamOpt(512, 1, 8000, 0.01, None),
-            NoamOpt(256, 1, 4000, 0.01, None)]
-    plt.plot(np.arange(1, 20000), [[opt.rate(i) for opt in opts] for i in range(1, 20000)])
+if __name__ == "__main__":
+    opts = [
+        NoamOpt(512, 1, 4000, 0.01, None),
+        NoamOpt(512, 1, 8000, 0.01, None),
+        NoamOpt(256, 1, 4000, 0.01, None),
+    ]
+    plt.plot(
+        np.arange(1, 20000), [[opt.rate(i) for opt in opts] for i in range(1, 20000)]
+    )
     plt.legend(["512:4000", "512:8000", "256:4000"])
     plt.show()

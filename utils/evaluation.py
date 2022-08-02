@@ -3,7 +3,9 @@ import tqdm
 from models.base import SeqGenerator
 
 
-def generate_multiple_sequences(generator: SeqGenerator, tmax: float, n_gen_seq: int = 100):
+def generate_multiple_sequences(
+    generator: SeqGenerator, tmax: float, n_gen_seq: int = 100
+):
     """
 
     Args:
@@ -16,14 +18,14 @@ def generate_multiple_sequences(generator: SeqGenerator, tmax: float, n_gen_seq:
     gen_seq_lengths = []
     gen_seq_types_lengths = []
     for i in range(n_gen_seq):
-        print('Generating the {} sequence'.format(i))
+        print("Generating the {} sequence".format(i))
         generator.generate_sequence(tmax, record_intensity=False)
         gen_seq_times = generator.event_times
         gen_seq_types = np.array(generator.event_types)
         gen_seq_lengths.append(len(gen_seq_times))
-        gen_seq_types_lengths.append([
-            (gen_seq_types == i).sum() for i in range(generator.model.input_size)
-        ])
+        gen_seq_types_lengths.append(
+            [(gen_seq_types == i).sum() for i in range(generator.model.input_size)]
+        )
     gen_seq_lengths = np.array(gen_seq_lengths)
     gen_seq_types_lengths = np.array(gen_seq_types_lengths)
 
@@ -32,8 +34,17 @@ def generate_multiple_sequences(generator: SeqGenerator, tmax: float, n_gen_seq:
     return gen_seq_lengths, gen_seq_types_lengths
 
 
-def predict_test(model, seq_times, seq_types, seq_lengths, pad, device='cpu',
-                 hmax: float = 40., use_jupyter: bool = False, rnn: bool = True):
+def predict_test(
+    model,
+    seq_times,
+    seq_types,
+    seq_lengths,
+    pad,
+    device="cpu",
+    hmax: float = 40.0,
+    use_jupyter: bool = False,
+    rnn: bool = True,
+):
     """Run predictions on testing dataset
 
     Args:
@@ -58,15 +69,17 @@ def predict_test(model, seq_times, seq_types, seq_lengths, pad, device='cpu',
     else:
         index_range_ = tqdm.trange(test_size)
     for index_ in index_range_:
-        _seq_data = (seq_times[index_],
-                     seq_types[index_],
-                     seq_lengths[index_])
+        _seq_data = (seq_times[index_], seq_types[index_], seq_lengths[index_])
         if rnn:
-            est, real_dt, err, real_type, est_type = model.read_predict(*_seq_data, hmax)
+            est, real_dt, err, real_type, est_type = model.read_predict(
+                *_seq_data, hmax
+            )
         else:
-            est, real_dt, err, real_type, est_type = model.read_predict(*_seq_data, pad, device, hmax)
+            est, real_dt, err, real_type, est_type = model.read_predict(
+                *_seq_data, pad, device, hmax
+            )
 
-        if err != err: # is nan
+        if err != err:  # is nan
             continue
         incr_estimates.append(est)
         incr_real.append(real_dt)
